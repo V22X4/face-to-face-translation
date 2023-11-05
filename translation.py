@@ -1,6 +1,7 @@
 import os
 import speech_recognition as sr
-from translate import Translator
+from googletrans import Translator
+# from translate import Translator
 from gtts import gTTS
 from languages import language_codes
 
@@ -8,6 +9,7 @@ from languages import language_codes
 def translate_audio(destination_lang):
     # Input audio file path
     # input_audio_path = input("Enter the path to the input audio file: ")
+    print("reached translation")
     input_audio_path = "uploads/extracted_audio.wav"
 
     # Check if the input audio file exists
@@ -18,11 +20,15 @@ def translate_audio(destination_lang):
     # Initialize the recognizer 
     recognizer = sr.Recognizer()
 
+
+    print("Recognizer")
+
     # Convert the input audio to text
     with sr.AudioFile(input_audio_path) as source:
         audio_data = recognizer.record(source)
         try:
             input_text = recognizer.recognize_google(audio_data)
+            print("Recognize input text")
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio.")
             return
@@ -37,8 +43,9 @@ def translate_audio(destination_lang):
     #     print(f"{code}: {name}")
 
     # Translate the text to the destination language
-    translator = Translator(to_lang=destination_lang)
-    translated_text = translator.translate(input_text)
+    print("translation start")
+    translator = Translator()
+    translated_text = translator.translate(input_text,dest=destination_lang).text
 
     # Generate speech from the translated text
     tts = gTTS(translated_text, lang=destination_lang)

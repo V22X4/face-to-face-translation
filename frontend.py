@@ -27,7 +27,8 @@ destination_lang = st.selectbox(
 )
 
 # Reverse the dictionary to map the selected language back to its code
-destination_lang_code = {v: k for k, v in language_codes.items()}[destination_lang]
+destination_lang_code = {v: k for k, v in language_codes.items()}[
+    destination_lang]
 
 # Button to start processing
 if st.button("Process"):
@@ -44,7 +45,7 @@ if st.button("Process"):
         video_clip = VideoFileClip(video_path)
         audio_clip = video_clip.audio
         audio_clip.write_audiofile(audio_path)
-        
+
         video_clip.write_videofile(temp_path, codec="libx264")
 
         # Read the content of the temporary video file as bytes
@@ -52,26 +53,34 @@ if st.button("Process"):
             video_bytes = file.read()
 
         # Now you can use the video_bytes in your application
-        # os.remove(temp_path)
-        
-        audio_bytes = audio_clip.to_soundarray().tobytes()
+        os.remove(temp_path)
 
+        # Translate and process the audio
+        translate_audio(destination_lang_code)
+        translate_audio_file_path = "uploads/translated_audio.wav"
+
+        # audio_path=audio_clip
+
+        with open(translate_audio_file_path, "rb") as file:
+            audio_bytes = file.read()
 
         finalvideo = syncvideo(video_file=video_bytes, audio_file=audio_bytes)
+        print('final video recieved')
 
+        with open(processed_video_path, "wb") as video_file:
+            video_file.write(finalvideo)
         # # Save the processed video to the specified path
         # os.makedirs("uploads", exist_ok=True)
         # processed_video_path = os.path.join("uploads", "processed_video.mp4")
         # finalvideo.write_videofile(processed_video_path, codec="libx264")
+        print('final video save')
 
         # # Display the processed video for playback
-        # st.video(processed_video_path)
+        st.video(processed_video_path)
         # # Display the processed video for playback
         # # processed_video_path = "uploads/processed_video.mp4"
         # # st.video(processed_video_path)
 
-        # # Translate and process the audio
-        # translate_audio(destination_lang_code)
 
 # Display the uploaded video for playback immediately after uploading
 if video_file is not None:
